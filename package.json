@@ -1,0 +1,22 @@
+{
+  "name": "telnyx-wss-server",
+  "version": "1.0.0",
+  "description": "WebSocket server for receiving Telnyx audio streams",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "telnyx",
+    "websocket",
+    "stt",
+    "audio",
+    "real-time"
+  ],
+  "author": "VM",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.15.1"
+  }
+}
