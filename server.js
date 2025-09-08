@@ -1,8 +1,10 @@
 const WebSocket = require('ws');
 const express = require('express');
 const http = require('http');
+const url = require('url');
 
 const PORT = process.env.PORT || 3001;
+const AUTH_TOKEN = process.env.AUTH_SECRET || null; // optional
 
 const app = express();
 const server = http.createServer(app);
@@ -11,6 +13,15 @@ const wss = new WebSocket.Server({ server, path: '/stream' });
 console.log(`🔊 Telnyx WebSocket server starting on wss://yourdomain.com:${PORT}/stream`);
 
 wss.on('connection', (ws, req) => {
+  const { query } = url.parse(req.url, true);
+
+  // 🔒 Optional: check token from ?token=xyz
+  if (AUTH_TOKEN && query.token !== AUTH_TOKEN) {
+    console.warn('❌ Unauthorized WebSocket connection attempt');
+    ws.close(1008, 'Unauthorized');
+    return;
+  }
+
   console.log('✅ Telnyx connected:', req.socket.remoteAddress);
 
   ws.on('message', async (msg) => {
@@ -26,9 +37,6 @@ wss.on('connection', (ws, req) => {
         const callSid = data.call_sid;
 
         // TODO: send this audioChunk to your STT pipeline
-        // Optionally buffer and detect end of utterance
-
-        // DEBUG:
         console.log(`[📥] Audio chunk from ${callSid} (base64 size: ${audioChunk.length})`);
       }
 
